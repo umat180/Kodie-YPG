@@ -1,4 +1,4 @@
-const CACHE = "kodie-ypg-v1";
+const CACHE = "kodie-ypg-v2";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./logo.png"];
 
 self.addEventListener("install", (event) => {
