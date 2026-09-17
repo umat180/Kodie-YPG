@@ -1,4 +1,4 @@
-const CACHE = "kodie-ypg-v2";
+const CACHE = "kodie-ypg-v3";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./logo.png"];
 
 self.addEventListener("install", (event) => {
@@ -21,17 +21,20 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api")) return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          if (response.ok && event.request.method === "GET") {
-            const clone = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok && event.request.method === "GET") {
+          const clone = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (url.pathname === "./") return caches.match("./index.html");
+          return caches.match("./index.html");
         })
-        .catch(() => caches.match("./index.html"));
-    })
+      )
   );
 });
